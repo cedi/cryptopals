@@ -1,57 +1,50 @@
-#include <algorithm>
 #include <stdexcept>
+#include <sstream>
+#include <iomanip>
+#include <string>
+#include <cstdint>
+
 
 #include "Hexadecimal.hpp"
 
 using namespace std;
 
-const char* const Hexadecimal::table = "0123456789ABCDEF";
+const string Hexadecimal::table = "0123456789ABCDEF";
 
-string Hexadecimal::encode(const std::string& input)
+string Hexadecimal::encode(const string& input)
 {
-    size_t len = input.length();
+	stringstream ss;
 
-    std::string output;
-    output.reserve(2 * len);
-    for(size_t i = 0; i < len; ++i)
-    {
-        const unsigned char c = input[i];
-        output.push_back(table[c >> 4]);
-        output.push_back(table[c & 15]);
-    }
-    return output;
+	ss << hex << setfill('0');
+  for(size_t i = 0; input.length() > i; ++i)
+	{
+		ss << setw(2) << static_cast<unsigned int>(static_cast<unsigned char>(input[i]));
+  }
+
+  return ss.str(); 
 }
 
-string Hexadecimal::decode(const std::string& input)
+string Hexadecimal::decode(const string& input)
 {
-    size_t len = input.length();
-    if(len & 1) 
-    {
-      throw std::invalid_argument("odd length");
-    }
+	string output;
 
-    std::string output;
-    output.reserve(len / 2);
-    for(size_t i = 0; i < len; i += 2)
-    {
-        char a = input[i];
-        const char* p = std::lower_bound(table, table + 16, a);
-        if(*p != a)
-        {
-          throw std::invalid_argument("not a hex digit");
-        }
+  if((input.length() % 2) != 0)
+	{
+  	throw runtime_error("String is not valid length ...");
+  }
 
-        char b = input[i + 1];
-        const char* q = std::lower_bound(table, table + 16, b);
-        if(*q != b)
-        {
-          throw std::invalid_argument("not a hex digit");
-        }
+	size_t cnt = input.length() / 2;
 
-        output.push_back(((p - table) << 4) | (q - table));
-    }
+  for(size_t i = 0; cnt > i; ++i)
+	{
+		uint32_t s = 0;
+    stringstream ss;
+    ss << hex << input.substr(i * 2, 2);
+    ss >> s;
 
-    return output;
+    output.push_back(static_cast<unsigned char>(s));
+  }
+
+  return output;
 }
-
 
