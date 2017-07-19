@@ -1,4 +1,4 @@
-#Convert hex to base64
+# Convert hex to base64
 The string:
 
 ```
@@ -13,5 +13,5 @@ SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
 
 So go ahead and make that happen. You'll need to use this code for the rest of the exercises.
 
-##Cryptopals Rule
+## Cryptopals Rule
 Always operate on raw bytes, never on encoded strings. Only use hex and base64 for pretty-printing.
