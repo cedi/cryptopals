@@ -11,6 +11,6 @@ include_directories (${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_executable (fixedxor main.cpp)
 
-# target_link_libraries (fixedxor LINK_PUBLIC )
+target_link_libraries (fixedxor LINK_PUBLIC XOR Hexadecimal)
 
 add_subdirectory (src)
