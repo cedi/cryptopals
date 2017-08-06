@@ -1,0 +1,2 @@
+/usr/bin/ar qc libHexadecimal.a  CMakeFiles/Hexadecimal.dir/src/Hexadecimal.cpp.o
+/usr/bin/ranlib libHexadecimal.a
