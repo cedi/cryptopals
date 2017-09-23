@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <cstring>
 
 #include "include/Hexadecimal.hpp"
 #include "include/XOR.hpp"
