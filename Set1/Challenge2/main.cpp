@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
-#include "include/Hexadecimal.hpp"
-#include "include/XOR.hpp"
+#include "Hexadecimal.hpp"
+#include "XOR.hpp"
 
 using namespace std;
 

@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "include/Base64.hpp"
-#include "include/Hexadecimal.hpp"
+#include "Base64.hpp"
+#include "Hexadecimal.hpp"
 
 using namespace std;
 

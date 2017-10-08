@@ -4,9 +4,9 @@
 #include <sstream>
 #include <cstring>
 
-#include "include/Hexadecimal.hpp"
-#include "include/XOR.hpp"
-#include "include/FrequencyCounter.hpp"
+#include "Hexadecimal.hpp"
+#include "XOR.hpp"
+#include "FrequencyCounter.hpp"
 
 using namespace std;
 
