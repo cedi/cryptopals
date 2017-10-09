@@ -11,11 +11,74 @@ CharFreqCntr::CharFreqCntr(std::string input, int charWidth)
 {
 }
 
+map<string, double> CharFreqCntr::getFrequency(CharacterMode mode, bool force)
+{
+	switch(mode)
+	{
+	case SINGLE:
+		return getSingleCharFreq(force);
+		
+	case DUAL:
+		return getDualCharFreq(force);
+
+	case REPEATING:
+		return getRepeatingChars(force);
+
+	default:
+		stringstream ss;
+		ss << "Invalid CharacterMode: " << mode << endl;
+		throw invalid_argument(ss.str());
+	}
+}
+
+string CharFreqCntr::getMostOccurent(CharacterMode mode, bool force)
+{
+	map<string, double>::iterator begin;
+	map<string, double>::iterator end;
+	map<string, double>::iterator iter;
+
+	switch(mode)
+	{
+	case SINGLE:
+		begin = singleCharFreq.begin();
+		end = singleCharFreq.end();
+		break;
+		
+	case DUAL:
+		begin = dualCharFreq.begin();
+		end = dualCharFreq.end();
+		break;
+
+	case REPEATING:
+		begin = repeatingCharFreq.begin();
+		end = repeatingCharFreq.end();
+		break;
+
+	default:
+		stringstream ss;
+		ss << "Invalid CharacterMode: " << mode << endl;
+		throw invalid_argument(ss.str());
+	}
+
+	double count = 0;
+	string character;
+	for(iter = begin; iter != end; iter++)
+	{
+		if(count < iter->second)
+		{
+			count = iter->second;
+			character = iter->first;
+		}
+	}
+
+	return character;
+}
+
 map<string, double> CharFreqCntr::getSingleCharFreq(bool force)
 {
 	if(force || singleCharFreq.empty())
 	{
-		analyzeSinglecharFreq();
+		analyzeSingleCharFreq();
 	}
 
 	return singleCharFreq;
@@ -42,7 +105,7 @@ map<string, double> CharFreqCntr::getRepeatingChars(bool force)
 }
 
 
-void CharFreqCntr::analyzeSinglecharFreq()
+void CharFreqCntr::analyzeSingleCharFreq()
 {
 	if((input.size() % 2) != 0)
 	{
