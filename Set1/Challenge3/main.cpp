@@ -7,6 +7,7 @@
 #include "Hexadecimal.hpp"
 #include "XOR.hpp"
 #include "FrequencyCounter.hpp"
+#include "TextScoring.hpp"
 
 using namespace std;
 
@@ -39,33 +40,71 @@ int main()
 #endif
 
 	cout << "Try to break it" << endl;
-	string character;
+	const string mostCurrentPossibilities = "ETAOIN SHRDLU";
+	map<string, double> possibleKeys;
+
+	// get possible key as character by probing every ASCII character
+	// This means try to XOR every ASCII character with one of the possible
+	// chars from mostCurrentPossibilities and compare it against the most
+	// current char of the analyzed text. The matches are potential keys
 	for(int i = 0; i < 256; i++)
 	{
-		stringstream ss;
-		ss << (char)i;
+		string toProbe(1, (char)i);
 
-		string encrypted = Hexadecimal::encode(XOR::encode(" ", ss.str()));
-		if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
+		for(auto possibleCurrentChar : mostCurrentPossibilities)
 		{
-			character = ss.str();
-			cout << "Key seems to be: " << character << endl;
-			break;
+			string encrypted = Hexadecimal::encode(XOR::encode(string(1, possibleCurrentChar), toProbe));
+			if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
+			{
+				cout << "Key seems to be: '" << toProbe << "'" << endl;
+				possibleKeys.insert(make_pair(toProbe, 0.0));
+				break;
+			}
 		}
 	}
 
+	// Now try to decrypt the encrypted text using the above calculated keys
+	// and analyze every result using the TextScoring class
 	string chipertext = Hexadecimal::decode(crypted);
+	cout << "Encrypted:	" << chipertext.size() << ": '" << chipertext << "'" << endl;
+
+	for(auto iter : possibleKeys)
+	{
+		string character = iter.first;
+
+		char* key = (char*)malloc(chipertext.size() + 1);
+		memset(key, character.c_str()[0], chipertext.size());
+		key[chipertext.size()] = '\0';
+
+		string decoded = XOR::encode(chipertext, key);
+		TextScoring score(decoded);
+
+		iter.second = score.analyze(TextScoring::PRINTABLE, TextScoring::NO_DECODE);
+
+		cout << "Trying key: '" << key << "'" << endl;
+
+	}
+
+	double score = 0.0;
+	string character;
+	for(auto iter : possibleKeys)
+	{
+		if(score < iter.second)
+		{
+			score = iter.second;
+			character = iter.first;
+		}
+	}
+
+	cout << "Key is: '" << character << "'" << endl;
+
 	char* key = (char*)malloc(chipertext.size() + 1);
 	memset(key, character.c_str()[0], chipertext.size());
 	key[chipertext.size()] = '\0';
 
-	cout << "Encrypted:	" << chipertext.size() << ": '" << chipertext << "'" << endl;
-	cout << "Key:		" << strlen(key) << ": '" << key << "'" << endl;
-
 	string decoded = XOR::encode(chipertext, key);
+
 	cout << "Decrypted:	" << decoded.size() << ": '" << decoded << "'" << endl;
-
-
 	return 0;
 }
 
