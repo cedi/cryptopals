@@ -57,7 +57,7 @@ int main()
 			if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
 			{
 				cout << "Key seems to be: '" << toProbe << "'" << endl;
-				possibleKeys.insert(make_pair(toProbe, 0.0));
+				possibleKeys.insert(make_pair(toProbe, -1));
 				break;
 			}
 		}
@@ -77,15 +77,15 @@ int main()
 		key[chipertext.size()] = '\0';
 
 		string decoded = XOR::encode(chipertext, key);
-		TextScoring score(decoded);
+		TextScoring score(Hexadecimal::encode(decoded));
 
-		iter.second = score.analyze(TextScoring::PRINTABLE, TextScoring::NO_DECODE);
+		possibleKeys[character] = score.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX);
 
 		cout << "Trying key: '" << key << "'" << endl;
 
 	}
 
-	double score = 0.0;
+	double score = -2;
 	string character;
 	for(auto iter : possibleKeys)
 	{

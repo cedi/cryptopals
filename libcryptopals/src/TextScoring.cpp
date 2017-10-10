@@ -47,7 +47,7 @@ double TextScoring::analyze(AnalyzeFlags aFlags, DecodeFlags dFlags) const
 		analyzerCnt++;
 	}
 
-	return analyzerCnt ? (score / analyzerCnt) : 0;
+	return analyzerCnt ? (score / (double)analyzerCnt) : -0.5;
 }
 
 double TextScoring::analyzePrintables(string toAnalyze) const
@@ -62,5 +62,5 @@ double TextScoring::analyzePrintables(string toAnalyze) const
 		}
 	}
 
-	return printables / toAnalyze.length();
+	return (double)printables / (double)toAnalyze.length();
 }
