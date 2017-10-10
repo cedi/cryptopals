@@ -56,8 +56,8 @@ int main()
 			string encrypted = Hexadecimal::encode(XOR::encode(string(1, possibleCurrentChar), toProbe));
 			if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
 			{
-				cout << "Key seems to be: '" << toProbe << "'" << endl;
-				possibleKeys.insert(make_pair(toProbe, -1));
+				//cout << "Key seems to be: '" << toProbe << "'" << endl;
+				possibleKeys.insert(make_pair(toProbe, 0));
 				break;
 			}
 		}
@@ -66,7 +66,6 @@ int main()
 	// Now try to decrypt the encrypted text using the above calculated keys
 	// and analyze every result using the TextScoring class
 	string chipertext = Hexadecimal::decode(crypted);
-	cout << "Encrypted:	" << chipertext.size() << ": '" << chipertext << "'" << endl;
 
 	for(auto iter : possibleKeys)
 	{
@@ -81,11 +80,10 @@ int main()
 
 		possibleKeys[character] = score.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX);
 
-		cout << "Trying key: '" << key << "'" << endl;
-
+		//cout << "Trying key: '" << key << "'" << endl;
 	}
 
-	double score = -2;
+	double score = 0;
 	string character;
 	for(auto iter : possibleKeys)
 	{
@@ -104,6 +102,7 @@ int main()
 
 	string decoded = XOR::encode(chipertext, key);
 
+	cout << "Encrypted:	" << chipertext.size() << ": '" << chipertext << "'" << endl;
 	cout << "Decrypted:	" << decoded.size() << ": '" << decoded << "'" << endl;
 	return 0;
 }
