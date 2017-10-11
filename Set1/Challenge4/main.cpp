@@ -40,21 +40,13 @@ void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
 			}
 		}
 	}
-
 }
 
-int main()
+void decryptAndScore(const string& crypted, const map<string, double>& possibleKeys, list<tuple<string, string, double>>* decryptedNScored)
 {
-	string crypted = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
-
-	map<string, double> possibleKeys;
-	probePossibleKeys(crypted, &possibleKeys);
-	
 	// Now try to decrypt the encrypted text using the above calculated keys
 	// and analyze every result using the TextScoring class
 	string chipertext = Hexadecimal::decode(crypted);
-
-	list<tuple<string, string, double>> decryptedNScored;
 
 	for(auto iter : possibleKeys)
 	{
@@ -67,25 +59,40 @@ int main()
 		string decoded = XOR::encode(chipertext, key);
 		TextScoring score(Hexadecimal::encode(decoded));
 
-		decryptedNScored.push_back(make_tuple(key, decoded, score.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX)));
+		decryptedNScored->push_back(make_tuple(key, decoded, score.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX)));
 	}
+}
 
-	double score = 0;
-	string key;
-	string decrypted;
+tuple<string, string, double> getBestMatch(const list<tuple<string, string, double>>& decryptedNScored)
+{
+	tuple<string, string, double> bestMatch;
+
 	for(auto result : decryptedNScored)
 	{
-		if(score < get<2>(result))
+		if(get<2>(bestMatch) < get<2>(result))
 		{
-			key = get<0>(result);
-			decrypted = get<1>(result);
-			score = get<2>(result);
+			bestMatch = make_tuple(get<0>(result), get<1>(result), get<2>(result));
 		}
 	}
 
-	cout << "Key is:    '" << key << "'" << endl;
-	cout << "Encrypted: '" << chipertext << "'" << endl;
-	cout << "Decrypted: '" << decrypted << "'" << endl;
+	return bestMatch;
+}
+
+int main()
+{
+	string crypted = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
+
+	map<string, double> possibleKeys;
+	probePossibleKeys(crypted, &possibleKeys);
+
+	list<tuple<string, string, double>> decryptedNScored;
+	decryptAndScore(crypted, possibleKeys, &decryptedNScored);
+
+	tuple<string, string, double> bestMatch = getBestMatch(decryptedNScored);
+
+	cout << "Key is:    '" << get<0>(bestMatch) << "'" << endl;
+	cout << "Encrypted: '" << crypted << "'" << endl;
+	cout << "Decrypted: '" << get<1>(bestMatch) << "'" << endl;
 	return 0;
 }
 
