@@ -3,6 +3,4 @@ One of the 60-character strings in [this file](4.txt) has been encrypted by sing
 
 Find it.
 
-(Your code from #3 should help.)# Single-byte XOR cipher
-The hex encoded string:
-
+(Your code from [#3](../Challenge3/) should help.)
