@@ -14,7 +14,13 @@
 
 using namespace std;
 
-
+/**
+ * Probe for possible keys
+ *
+ * @param crypted [in] the decrypted string
+ * @param possibleKeys [out] the possible keys, inserted to a map in the format
+ * key, xxx
+ */
 void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
 {
 	CharFreqCntr freq(crypted, 2);
@@ -43,6 +49,14 @@ void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
 	}
 }
 
+/**
+ * Decrypt a string using a list of possible keys, score them and return
+ * everything by inserting the key, the decoded message and the score in a list
+ *
+ * @param crypted [in] the decrypted message 
+ * @param possibleKeys [in] the possible keys with the format key, xxx
+ * @param decryptedNScored [out] the list in which the results are inserted.
+ */
 void decryptAndScore(const string& crypted, const map<string, double>& possibleKeys, list<tuple<string, string, double>>* decryptedNScored)
 {
 	// Now try to decrypt the encrypted text using the above calculated keys
@@ -64,6 +78,17 @@ void decryptAndScore(const string& crypted, const map<string, double>& possibleK
 	}
 }
 
+/**
+ * get the best match of a list containing the key, the decrypted string and the
+ * score. The list is represented as
+ * std::list<std::tuple<std::string, std::string, double>>
+ *
+ * @param decryptedNScored [in] the list with entrys from whitch the best
+ * score should be determined and returned
+ * 
+ * @return the entry of the list with the highest score as 
+ * std::tuple<std::string, std::string, double>
+ */
 tuple<string, string, double> getBestMatch(const list<tuple<string, string, double>>& decryptedNScored)
 {
 	tuple<string, string, double> bestMatch;
@@ -79,6 +104,18 @@ tuple<string, string, double> getBestMatch(const list<tuple<string, string, doub
 	return bestMatch;
 }
 
+/**
+ * get the best match of a list containing the crypted string, the key, the
+ * decrypted string and the score.
+ * The list is represented as
+ * std::list<std::tuple<std::string, std::string, std::string, double>>
+ *
+ * @param cryptedKeyDecryptedNScored [in] the list with entrys from whitch the best
+ * score should be determined and returned
+ * 
+ * @return the entry of the list with the highest score as 
+ * std::tuple<std::string, std::string, std::string, double>
+ */
 tuple<string, string, string, double> getBestMatch(const list<tuple<string, string, string, double>>& cryptedKeyDecryptedNScored)
 {
 	tuple<string, string, string, double> bestMatch;
@@ -94,7 +131,14 @@ tuple<string, string, string, double> getBestMatch(const list<tuple<string, stri
 	return bestMatch;
 }
 
-tuple<string, string, double> crack(string crypted)
+/**
+ * try to crack a single byte xor string
+ *
+ * @param crypted [in] the crypted string, hexadecimal encoded
+ *
+ * @return key, decrypted, score as std::tuple<std::string, std::string, double>
+ */
+tuple<string, string, double> crack(const string& crypted)
 {
 	map<string, double> possibleKeys;
 	probePossibleKeys(crypted, &possibleKeys);
@@ -108,6 +152,12 @@ tuple<string, string, double> crack(string crypted)
 	return bestMatch;
 }
 
+/**
+ * Read a file, containing hexadecimal encoded strings and try to crack them.
+ *
+ * According to the level description only one string is propery encrypted.
+ * Therefore output only the one with the highest score after decrypting
+ */
 int main(int argc, char* argv[])
 {
 	if(argc != 2)
