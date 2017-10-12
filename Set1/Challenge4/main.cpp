@@ -18,16 +18,14 @@ using namespace std;
  * Probe for possible keys
  *
  * @param crypted [in] the decrypted string
- * @param possibleKeys [out] the possible keys, inserted to a map in the format
- * key, xxx
+ * @param possibleKeys [out] the possible keys, inserted to a list
  */
-void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
+void probePossibleKeys(const string& crypted, list<string>* possibleKeys)
 {
 	CharFreqCntr freq(crypted, 2);
 
 	auto singleChar = freq.getFrequency(CharFreqCntr::SINGLE);
 
-	cout << "Try to break it" << endl;
 	const string mostCurrentPossibilities = "ETAOIN SHRDLU";
 
 	// get possible key as character by probing every ASCII character
@@ -43,7 +41,7 @@ void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
 			string encrypted = Hexadecimal::encode(XOR::encode(string(1, possibleCurrentChar), toProbe));
 			if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
 			{
-				possibleKeys->insert(make_pair(toProbe, 0));
+				possibleKeys->push_back(toProbe);
 			}
 		}
 	}
@@ -54,27 +52,25 @@ void probePossibleKeys(const string& crypted, map<string, double>* possibleKeys)
  * everything by inserting the key, the decoded message and the score in a list
  *
  * @param crypted [in] the decrypted message 
- * @param possibleKeys [in] the possible keys with the format key, xxx
+ * @param possibleKeys [in] the possible keys 
  * @param decryptedNScored [out] the list in which the results are inserted.
  */
-void decryptAndScore(const string& crypted, const map<string, double>& possibleKeys, list<tuple<string, string, double>>* decryptedNScored)
+void decryptAndScore(
+		const string& crypted, const list<string>& possibleKeys,
+		list<tuple<string, string, double>>* decryptedNScored
+	)
 {
 	// Now try to decrypt the encrypted text using the above calculated keys
 	// and analyze every result using the TextScoring class
 	string chipertext = Hexadecimal::decode(crypted);
 
-	for(auto iter : possibleKeys)
+	for(auto key : possibleKeys)
 	{
-		string character = iter.first;
-
-		char* key = (char*)malloc(chipertext.size() + 1);
-		memset(key, character.c_str()[0], chipertext.size());
-		key[chipertext.size()] = '\0';
-
 		string decoded = XOR::encode(chipertext, key);
-		TextScoring score(Hexadecimal::encode(decoded));
+		TextScoring scoring(Hexadecimal::encode(decoded));
+		double score = scoring.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX);
 
-		decryptedNScored->push_back(make_tuple(key, decoded, score.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX)));
+		decryptedNScored->push_back(make_tuple(key, decoded, score));
 	}
 }
 
@@ -140,14 +136,14 @@ tuple<string, string, string, double> getBestMatch(const list<tuple<string, stri
  */
 tuple<string, string, double> crack(const string& crypted)
 {
-	map<string, double> possibleKeys;
+	list<string> possibleKeys;
 	probePossibleKeys(crypted, &possibleKeys);
 
 	list<tuple<string, string, double>> decryptedNScored;
 	decryptAndScore(crypted, possibleKeys, &decryptedNScored);
 
 	auto bestMatch = getBestMatch(decryptedNScored);
-	cout << "Decrypted: " << get<1>(bestMatch) << endl;
+	// cout << "Decrypted: " << get<1>(bestMatch) << endl;
 
 	return bestMatch;
 }
@@ -173,7 +169,7 @@ int main(int argc, char* argv[])
 	string crypted;
 	while(getline(infile, crypted))
 	{
-		cout << "Try: " << crypted << endl;
+		// cout << "Try: " << crypted << endl;
 		auto cracked = crack(crypted);
 		bestMatches.push_back(make_tuple(crypted, get<0>(cracked), get<1>(cracked), get<2>(cracked)));
 	}

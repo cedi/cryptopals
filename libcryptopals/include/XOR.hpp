@@ -5,5 +5,5 @@
 class XOR
 {
 public:
-  static std::string encode(std::string data, std::string key);
+  static std::string encode(const std::string& data, const std::string& key);
 };

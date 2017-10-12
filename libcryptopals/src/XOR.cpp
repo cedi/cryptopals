@@ -1,24 +1,36 @@
 #include <stdexcept>
+#include <sstream>
 
 #include "XOR.hpp"
 
 using namespace std;
 
-string XOR::encode(string data, string key)
+string XOR::encode(const string& data, const string& inputKey)
 {
-  if(data.length() != key.length())
-  {
-    throw length_error("data and length aren't equal");
-  }
+	string key = inputKey;
+	while(key.length() < data.length())
+	{
+		key += inputKey;
+	}
 
-  size_t strLen = data.length();
-  string encoded;
+	if(key.length() > data.length())
+	{
+		key = key.substr(0, data.length());
+	}
 
-  for(int i = 0; i < strLen; ++i)
-  {
-    auto s = static_cast<char>(data[i] ^ key[i]);
-    encoded.append(1, s);
-  }
+	if(data.length() != key.length())
+	{
+		throw length_error("data and length aren't equal");
+	}
 
-  return encoded;
+	size_t strLen = data.length();
+	string encoded;
+
+	for(int i = 0; i < strLen; ++i)
+	{
+		auto s = static_cast<char>(data[i] ^ key[i]);
+		encoded.append(1, s);
+	}
+
+	return encoded;
 }
