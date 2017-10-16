@@ -26,7 +26,8 @@ string XOR::encode(const string& data, const string& inputKey)
 		throw length_error("data and length aren't equal");
 	}
 
-	cout << "Key: " << key << endl;
+	cout << "Data: " << data << endl;
+	cout << "Key:  " << key << endl;
 
 	size_t strLen = data.length();
 	string encoded;
