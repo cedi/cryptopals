@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class Hexadecimal
 {
@@ -9,5 +10,6 @@ private:
 
 public:
   static std::string encode(const std::string& input);
-  static std::string decode(const std::string& input);
+  static std::string encode(const std::vector<uint8_t>& input);
+  static std::vector<uint8_t> decode(const std::string& input);
 };

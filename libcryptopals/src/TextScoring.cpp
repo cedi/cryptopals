@@ -10,29 +10,12 @@
 
 using namespace std;
 
-TextScoring::TextScoring(std::string input)
-	: input(input)
+TextScoring::TextScoring(string input, DecodeFlags dFlags)
 {
-}
-
-double TextScoring::analyze(AnalyzeFlags aFlags, DecodeFlags dFlags) const
-{
-	double score = 0;
-	int analyzerCnt = 0;
-	string toAnalyze;
-
 	switch(dFlags)
 	{
-	case DecodeFlags::NO_DECODE:
-		toAnalyze = input;
-		break;
-
 	case DecodeFlags::DECODE_HEX:
-		toAnalyze = Hexadecimal::decode(input);
-		break;
-
-	case DecodeFlags::DECODE_BASE64:
-		toAnalyze = Base64::decode(input);
+		this->input = Hexadecimal::decode(input);
 		break;
 
 	default:
@@ -40,27 +23,33 @@ double TextScoring::analyze(AnalyzeFlags aFlags, DecodeFlags dFlags) const
 		ss << "Invalid DecodeFlag: " << dFlags << endl;
 		throw invalid_argument(ss.str());
 	}
+}
+
+double TextScoring::analyze(AnalyzeFlags aFlags) const
+{
+	double score = 0;
+	int analyzerCnt = 0;
 
 	if((aFlags & AnalyzeFlags::PRINTABLE) == AnalyzeFlags::PRINTABLE)
 	{
-		score += analyzePrintables(toAnalyze);
+		score += analyzePrintables();
 		analyzerCnt++;
 	}
 
 	return analyzerCnt ? (score / (double)analyzerCnt) : 0;
 }
 
-double TextScoring::analyzePrintables(string toAnalyze) const
+double TextScoring::analyzePrintables() const
 {
 	int printables = 0;
 
-	for(char c : toAnalyze)
+	for(uint8_t c : input)
 	{
-		if(isprint(c))
+		if(isprint(static_cast<char>(c)))
 		{
 			printables++;
 		}
 	}
 
-	return (double)printables / (double)toAnalyze.length();
+	return (double)printables / (double)input.size();
 }

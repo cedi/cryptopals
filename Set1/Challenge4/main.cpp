@@ -11,6 +11,7 @@
 #include "XOR.hpp"
 #include "FrequencyCounter.hpp"
 #include "TextScoring.hpp"
+#include "Utils.hpp"
 
 using namespace std;
 
@@ -42,9 +43,13 @@ int main(int argc, char* argv[])
 	
 	auto bestMatch = XOR::getBestMatch(bestMatches);
 
-	cout << "Encrypted String: '" << get<0>(bestMatch) << "'" << endl;
-	cout << "Key:              '" << get<1>(bestMatch) << "'" << endl;
-	cout << "Decrypted:        '" << get<2>(bestMatch) << "'" << endl;
+	auto encrypted = get<0>(bestMatch);
+	auto key = get<1>(bestMatch);
+	auto decrypted = Hexadecimal::decode(get<2>(bestMatch));
+
+	cout << "Key is:    '" << key << "'" << endl;
+	cout << "Encrypted: '" << encrypted << "'" << endl;
+	cout << "Decrypted: '" << Utils::byteVecToStr(decrypted, "") << "'" << endl;
 
 	return 0;
 }

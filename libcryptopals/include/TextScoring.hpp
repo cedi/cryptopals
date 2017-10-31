@@ -2,16 +2,13 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 class TextScoring
 {
 public:
-	TextScoring(std::string input);
-
 	enum DecodeFlags 
 	{
-		NO_DECODE,
-		DECODE_BASE64,
 		DECODE_HEX
 	};
 
@@ -20,12 +17,14 @@ public:
 		PRINTABLE	= 0x01
 	};
 
-	double analyze(AnalyzeFlags aFlags, DecodeFlags dFlags) const;
+	TextScoring(std::string input, DecodeFlags dFlags);
+
+	double analyze(AnalyzeFlags aFlags) const;
 
 private:
-	double analyzePrintables(std::string toAnalyze) const;
+	double analyzePrintables() const;
 
 // Member Variables
 private:
-	std::string input;
+	std::vector<uint8_t> input;
 };

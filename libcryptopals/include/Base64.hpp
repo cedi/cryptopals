@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class Base64
 {
@@ -12,6 +13,6 @@ private:
   Base64() {}
 
 public:
-  static std::string encode(const std::string &bindata);
-  static std::string decode(const std::string &ascdata);
+  static std::string encode(const std::vector<uint8_t> &bindata);
+  static std::vector<uint8_t> decode(const std::string &ascdata);
 };

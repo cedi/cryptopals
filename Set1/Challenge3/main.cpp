@@ -8,6 +8,7 @@
 #include "XOR.hpp"
 #include "FrequencyCounter.hpp"
 #include "TextScoring.hpp"
+#include "Utils.hpp"
 
 using namespace std;
 
@@ -23,11 +24,13 @@ int main()
 {
 	string crypted = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
 
-	auto cracked = XOR::crack(crypted);
+	auto result = XOR::crack(crypted);
+	auto key = get<0>(result);
+	auto decrypted = Hexadecimal::decode(get<1>(result));
 
-	cout << "Key is:    '" << get<0>(cracked) << "'" << endl;
+	cout << "Key is:    '" << key << "'" << endl;
 	cout << "Encrypted: '" << crypted << "'" << endl;
-	cout << "Decrypted: '" << get<1>(cracked) << "'" << endl;
+	cout << "Decrypted: '" << Utils::byteVecToStr(decrypted, "") << "'" << endl;
 	return 0;
 }
 

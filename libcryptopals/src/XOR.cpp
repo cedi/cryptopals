@@ -1,44 +1,50 @@
 #include <stdexcept>
 #include <iostream>
+#include <vector>
 
 #include "XOR.hpp"
 #include "Hexadecimal.hpp"
 #include "FrequencyCounter.hpp"
 #include "TextScoring.hpp"
+#include "Utils.hpp"
 
 using namespace std;
 
-string XOR::encode(const string& data, const string& inputKey)
+string XOR::encode(const vector<uint8_t>& data, const vector<uint8_t>& inputKey)
 {
-	string key = inputKey;
-	while(key.length() < data.length())
+	vector<uint8_t> key = inputKey;
+	while(key.size() < data.size())
 	{
-		key += inputKey;
+		key.insert(end(key), begin(inputKey), end(inputKey));
 	}
 
-	if(key.length() > data.length())
+	if(key.size() > data.size())
 	{
-		key = key.substr(0, data.length());
+		key.erase(begin(key) + data.size(), end(key));
 	}
 
-	if(data.length() != key.length())
+	if(data.size() != key.size())
 	{
 		throw length_error("data and length aren't equal");
 	}
 
-	cout << "Data: " << data << endl;
-	cout << "Key:  " << key << endl;
+	cout << "Data: " << Utils::byteVecToStr(data) << endl;
+	cout << "Key:  " << Utils::byteVecToStr(key) << endl;
 
-	size_t strLen = data.length();
-	string encoded;
+	size_t strLen = data.size();
+	// string encoded;
+	vector<uint8_t> encoded;
 
+	// TODO: do everything as byte array, not as string. This could cause some
+	// problems with characters that representing some escape secquences in a 
+	// c++ string
 	for(int i = 0; i < strLen; ++i)
 	{
-		auto s = static_cast<char>(data[i] ^ key[i]);
-		encoded.append(1, s);
+		auto s = static_cast<uint8_t>(data[i] ^ key[i]);
+		encoded.push_back(s);
 	}
 
-	return encoded;
+	return Hexadecimal::encode(encoded);
 }
 
 tuple<string, string, double> XOR::crack(const string& crypted)
@@ -55,7 +61,10 @@ tuple<string, string, double> XOR::crack(const string& crypted)
 	return bestMatch;
 }
 
-tuple<string, string, double> XOR::getBestMatch(const list<tuple<string, string, double>>& decryptedNScored)
+tuple<string, string, double>
+		XOR::getBestMatch(
+			const list<tuple<string, string, double>>& decryptedNScored
+		)
 {
 	tuple<string, string, double> bestMatch;
 
@@ -70,7 +79,10 @@ tuple<string, string, double> XOR::getBestMatch(const list<tuple<string, string,
 	return bestMatch;
 }
 
-tuple<string, string, string, double> XOR::getBestMatch(const list<tuple<string, string, string, double>>& cryptedKeyDecryptedNScored)
+tuple<string, string, string, double>
+		XOR::getBestMatch(
+				const list<tuple<string, string, string, double>>& cryptedKeyDecryptedNScored
+			)
 {
 	tuple<string, string, string, double> bestMatch;
 
@@ -93,13 +105,14 @@ void XOR::decryptAndScore(
 {
 	// Now try to decrypt the encrypted text using the above calculated keys
 	// and analyze every result using the TextScoring class
-	string chipertext = Hexadecimal::decode(crypted);
+	auto chipertext = Hexadecimal::decode(crypted);
 
 	for(auto key : possibleKeys)
 	{
-		string decoded = XOR::encode(chipertext, key);
-		TextScoring scoring(Hexadecimal::encode(decoded));
-		double score = scoring.analyze(TextScoring::PRINTABLE, TextScoring::DECODE_HEX);
+		auto decoded = XOR::encode(chipertext, Utils::strToByteVec(key));
+
+		TextScoring scoring(decoded, TextScoring::DECODE_HEX);
+		double score = scoring.analyze(TextScoring::PRINTABLE);
 
 		decryptedNScored->push_back(make_tuple(key, decoded, score));
 	}
@@ -108,8 +121,7 @@ void XOR::decryptAndScore(
 void XOR::probePossibleKeys(const string& crypted, list<string>* possibleKeys)
 {
 	CharFreqCntr freq(crypted, 2);
-
-	auto singleChar = freq.getFrequency(CharFreqCntr::SINGLE);
+	freq.getFrequency(CharFreqCntr::SINGLE);
 
 	const string mostCurrentPossibilities = "ETAOIN SHRDLU";
 
@@ -123,7 +135,8 @@ void XOR::probePossibleKeys(const string& crypted, list<string>* possibleKeys)
 
 		for(auto possibleCurrentChar : mostCurrentPossibilities)
 		{
-			string encrypted = Hexadecimal::encode(XOR::encode(string(1, possibleCurrentChar), toProbe));
+			string encrypted = XOR::encode(Utils::strToByteVec(string(1, possibleCurrentChar)), Utils::strToByteVec(toProbe));
+
 			if(encrypted == freq.getMostOccurent(CharFreqCntr::SINGLE))
 			{
 				possibleKeys->push_back(toProbe);

@@ -21,14 +21,17 @@ public:
 	 * If the key is longer than data, the key is trimed to the right length.
 	 */
 	static std::string
-		encode(const std::string& data, const std::string& key);
+		encode(const std::vector<uint8_t>& data, const std::vector<uint8_t>& key);
 
 	/**
 	 * try to crack a single byte xor string
 	 *
 	 * @param crypted [in] the crypted string, hexadecimal encoded
 	 *
-	 * @return key, decrypted, score as std::tuple<std::string, std::string, double>
+	 * @return the entry of the list with the highest score as 
+	 * std::tuple<std::string, std::string, double>
+	 * containing the following values
+	 * tuple<key, decrypted, score>
 	 */
 	static std::tuple<std::string, std::string, double>
 		crack(const std::string& crypted);
@@ -37,28 +40,37 @@ public:
 	 * get the best match of a list containing the key, the decrypted string and the
 	 * score. The list is represented as
 	 * std::list<std::tuple<std::string, std::string, double>>
+	 * containing the following values
+	 * list<tuple<key, decrypted, score>>
 	 *
 	 * @param decryptedNScored [in] the list with entrys from whitch the best
 	 * score should be determined and returned
 	 * 
 	 * @return the entry of the list with the highest score as 
 	 * std::tuple<std::string, std::string, double>
+	 * containing the following values
+	 * tuple<key, decrypted, score>
 	 */
 	static std::tuple<std::string, std::string, double>
 		getBestMatch(
-				const std::list<std::tuple<std::string, std::string, double>>& decryptedNScored
-			);
+			const std::list<std::tuple<std::string, std::string, double>>& decryptedNScored
+		);
+
 	/**
 	 * get the best match of a list containing the crypted string, the key, the
 	 * decrypted string and the score.
 	 * The list is represented as
 	 * std::list<std::tuple<std::string, std::string, std::string, double>>
+	 * containing the following values
+	 * list<tuple<crypted, key, decrypted, score>>
 	 *
 	 * @param cryptedKeyDecryptedNScored [in] the list with entrys from whitch the best
 	 * score should be determined and returned
 	 * 
 	 * @return the entry of the list with the highest score as 
 	 * std::tuple<std::string, std::string, std::string, double>
+	 * containing the following values
+	 * tuple<crypted, key, decrypted, score>
 	 */
 	static std::tuple<std::string, std::string, std::string, double>
 		getBestMatch(

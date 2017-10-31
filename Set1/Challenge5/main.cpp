@@ -2,6 +2,7 @@
 #include <string>
 #include "Hexadecimal.hpp"
 #include "XOR.hpp"
+#include "Utils.hpp"
 
 using namespace std;
 
@@ -11,11 +12,10 @@ int main()
 	cout << "*        Repeating key XOR        *" << endl;
 	cout << "***********************************" << endl << endl;
 	string line1 = "Burning 'em, if you ain't quick and nimble";
-	string line2 = "I go crazy when I hear a cymbal";
 	
 	string key = "ICE";
 
-	string crypted1 = Hexadecimal::encode(XOR::encode(line1, key));
+	string crypted1 = XOR::encode(Utils::strToByteVec(line1), Utils::strToByteVec(key));
 
 	cout << "Is crypted:  ";
 	cout << crypted1 <<  endl;
@@ -24,7 +24,8 @@ int main()
 
 	cout << endl;
 
-	string crypted2 = Hexadecimal::encode(XOR::encode(line2, key));
+	string line2 = "I go crazy when I hear a cymbal";
+	string crypted2 = XOR::encode(Utils::strToByteVec(line2), Utils::strToByteVec(key));
 	cout << "Is crypted:  ";
 	cout << crypted2 <<  endl;
 	cout << "Should be:   ";

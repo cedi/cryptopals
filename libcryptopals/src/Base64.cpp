@@ -21,7 +21,7 @@ const char Base64::reverseLookupTable[128] =
    41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 64, 64, 64, 64, 64
 };
 
-string Base64::encode(const string &bindata)
+string Base64::encode(const vector<uint8_t>& bindata)
 {
   if(bindata.size() > (numeric_limits<string::size_type>::max() / 4u) * 3u)
   {
@@ -35,9 +35,9 @@ string Base64::encode(const string &bindata)
   size_t outpos = 0;
   int bits_collected = 0;
   unsigned int accumulator = 0;
-  const string::const_iterator binend = bindata.end();
+  const vector<uint8_t>::const_iterator binend = bindata.end();
 
-  for(string::const_iterator i = bindata.begin(); i != binend; ++i) 
+  for(vector<uint8_t>::const_iterator i = bindata.begin(); i != binend; ++i) 
   {
     accumulator = (accumulator << 8) | (*i & 0xffu);
     bits_collected += 8;
@@ -58,9 +58,9 @@ string Base64::encode(const string &bindata)
   return retval;
 }
 
-string Base64::decode(const string &ascdata)
+vector<uint8_t> Base64::decode(const string &ascdata)
 {
-  string retval;
+  vector<uint8_t> retval;
   const string::const_iterator last = ascdata.end();
   int bits_collected = 0;
   unsigned int accumulator = 0;
@@ -85,7 +85,7 @@ string Base64::decode(const string &ascdata)
     if(bits_collected >= 8)
     {
       bits_collected -= 8;
-      retval += (char)((accumulator >> bits_collected) & 0xffu);
+      retval.push_back((char)((accumulator >> bits_collected) & 0xffu));
     }
   }
 
