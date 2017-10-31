@@ -46,3 +46,6 @@
 
 # ignore build directory
 build/
+
+# ignore gdb history
+.gdb_history

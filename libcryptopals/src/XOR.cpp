@@ -28,19 +28,15 @@ string XOR::encode(const vector<uint8_t>& data, const vector<uint8_t>& inputKey)
 		throw length_error("data and length aren't equal");
 	}
 
-	cout << "Data: " << Utils::byteVecToStr(data) << endl;
-	cout << "Key:  " << Utils::byteVecToStr(key) << endl;
+	cout << "Data: " << Utils::byteVecToStr(data, "") << endl;
+	cout << "Key:  " << Utils::byteVecToStr(key, "") << endl;
 
 	size_t strLen = data.size();
-	// string encoded;
 	vector<uint8_t> encoded;
 
-	// TODO: do everything as byte array, not as string. This could cause some
-	// problems with characters that representing some escape secquences in a 
-	// c++ string
 	for(int i = 0; i < strLen; ++i)
 	{
-		auto s = static_cast<uint8_t>(data[i] ^ key[i]);
+		auto s = data[i] ^ key[i];
 		encoded.push_back(s);
 	}
 

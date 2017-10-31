@@ -11,6 +11,7 @@ int main()
 	cout << "***********************************" << endl;
 	cout << "*        Repeating key XOR        *" << endl;
 	cout << "***********************************" << endl << endl;
+
 	string line1 = "Burning 'em, if you ain't quick and nimble";
 	
 	string key = "ICE";
@@ -24,10 +25,10 @@ int main()
 
 	cout << endl;
 
-	string line2 = "I go crazy when I hear a cymbal";
-	string crypted2 = XOR::encode(Utils::strToByteVec(line2), Utils::strToByteVec(key));
-	cout << "Is crypted:  ";
-	cout << crypted2 <<  endl;
-	cout << "Should be:   ";
-	cout << "a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f" << endl;
+	//string line2 = "I go crazy when I hear a cymbal";
+	//string crypted2 = XOR::encode(Utils::strToByteVec(line2), Utils::strToByteVec(key));
+	//cout << "Is crypted:  ";
+	//cout << crypted2 <<  endl;
+	//cout << "Should be:   ";
+	//cout << "a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f" << endl;
 }
